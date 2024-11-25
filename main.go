@@ -9,6 +9,7 @@ import (
 )
 
 var randomSeed = flag.Int64("seed", time.Now().UnixNano(), "Random seed for the randomness source.")
+var samples = flag.Int("samples", 1000, "Number of samples in the simulation.")
 
 func main() {
 	flag.Parse()
@@ -16,13 +17,8 @@ func main() {
 	r := rand.New(rand.NewSource(*randomSeed))
 	g, err := NewGameFromState(&GameStateInput{
 		Camels: map[BoardPosition][]Color{
-			1:  {Yellow, Green},
-			3:  {Red, Blue},
-			8:  {Purple},
-			14: {White, Black},
-		},
-		Cheers: map[BoardPosition]string{
-			2: "",
+			0: {Blue, Green, Red, Yellow, Purple},
+			5: {White, Black},
 		},
 		DiePyramid: NewDiePyramid(r),
 	})
@@ -30,15 +26,10 @@ func main() {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("%s\n", g)
-	d := &RankingDistribution{}
-	//	d.RecordRanking(&g.ranking)
-	rs := [NumMovesPerLeg]Color{Yellow, Green, Red, Blue, Purple}
-	for i := 0; i < 10000; i++ {
-		r.Shuffle(NumMovesPerLeg, func(i, j int) {
-			rs[i], rs[j] = rs[j], rs[i]
-		})
-		d.RecordRanking(&rs)
-	}
-	fmt.Printf("%s\n", d)
+	start := time.Now()
+	dist := g.SimulateLegRankingDistribution(*samples)
+	end := time.Now()
+
+	fmt.Printf("time: %s\n", end.Sub(start))
+	fmt.Printf("Distribution: \n%s\n", dist)
 }

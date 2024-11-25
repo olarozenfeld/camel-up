@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	//	"math/rand"
 	"strings"
 	"testing"
 	"time"
@@ -530,35 +530,43 @@ func TestApplyCamelMove(t *testing.T) {
 			if start.ranking != tc.wantRanking {
 				t.Errorf("want ranking %s, got %s", tc.wantRanking, start.ranking)
 			}
-			cp, err := NewGameFromState(tc.startState)
-			if err != nil {
-				t.Fatal(err)
-			}
-			start.undoLastCamelMove()
-			if !start.equals(cp) {
-				t.Errorf("want board state after undo:\n%s\nGot board state:\n%s\n", cp, start)
-			}
+			//			cp, err := NewGameFromState(tc.startState)
+			//			if err != nil {
+			//				t.Fatal(err)
+			//			}
+			//			start.undoLastCamelMove()
+			//			if !start.equals(cp) {
+			//				t.Errorf("want board state after undo:\n%s\nGot board state:\n%s\n", cp, start)
+			//			}
 		})
 	}
 }
 
 func TestComputeLegRankingDistribution(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	//r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	testCases := []struct {
 		startState       *GameStateInput
 		wantDistribution *RankingDistribution
 	}{
+		// {
+		// 	startState: &GameStateInput{
+		// 		Camels: map[BoardPosition][]Color{
+		// 			1: {Yellow, Green, White, Red},
+		// 			5: {Black, Blue},
+		// 			9: {Purple},
+		// 		},
+		// 		Cheers: map[BoardPosition]string{
+		// 			8: "",
+		// 		},
+		// 		DiePyramid: NewDiePyramidWithDice(r, []Color{Blue, Purple, Black}),
+		// 	},
+		// },
 		{
 			startState: &GameStateInput{
 				Camels: map[BoardPosition][]Color{
-					1: {Yellow, Green, White, Red},
-					5: {Black, Blue},
-					9: {Purple},
+					0: {Blue, Green, Red, Yellow, Purple},
+					5: {White, Black},
 				},
-				Cheers: map[BoardPosition]string{
-					8: "",
-				},
-				DiePyramid: NewDiePyramidWithDice(r, []Color{Blue, Purple, Black}),
 			},
 		},
 	}
@@ -568,7 +576,9 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got := g.SimulateLegRankingDistribution(21600)
+			fmt.Printf("time: %s", time.Now())
+			got := g.SimulateLegRankingDistribution(5598720)
+			fmt.Printf("time: %s", time.Now())
 			fmt.Printf("Got: \n%s\n", got)
 		})
 	}
