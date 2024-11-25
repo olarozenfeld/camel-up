@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -25,13 +26,16 @@ func (d *RankingDistribution) RecordRanking(ranking *[NumRacingCamels]Color) {
 func (d *RankingDistribution) String() string {
 	var s strings.Builder
 	fmt.Fprintf(&s, "Total rankings: %d\n", d.TotalRankings)
-	s.WriteString(colorPrinters[White]("\tLast\t\t4th\t\t3rd\t\t2nd\t\tFirst\n"))
+	digits := int(math.Log10(float64(d.TotalRankings))) + 1
+	headerPattern := strings.Repeat(fmt.Sprintf("\t%%%ds", digits+9), 5)
+	s.WriteString(colorPrinters[White](headerPattern+"\n", "Last", "4th", "3rd", "2nd", "First"))
 	for c := Green; c < Black; c++ {
 		fmt.Fprintf(&s, "%s\t", c)
 		for r := Last; r <= First; r++ {
 			samples := d.Rankings[c][r]
 			percentage := float64(samples) * 100 / float64(d.TotalRankings)
-			fmt.Fprintf(&s, "%d (%.2f%%)\t", samples, percentage)
+			pattern := fmt.Sprintf("%%%dd (%%5.2f%%%%)\t", digits)
+			fmt.Fprintf(&s, pattern, samples, percentage)
 		}
 		s.WriteString("\n")
 	}
