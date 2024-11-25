@@ -263,7 +263,6 @@ func (g *Game) HasBoo(pos BoardPosition) bool {
 }
 
 func (g *Game) moveStack(bottom *camel, top *camel, destPos BoardPosition, pushBelowStack bool) {
-	//	fmt.Printf("moveStack: %s -> %s to %d (%v)\n", bottom, top, destPos, pushBelowStack)
 	sourceSp := &g.boardSpaces[bottom.Position]
 	// Disconnect stack from source space, whether it is currently at the top or bottom:
 	if sourceSp.StackTop == top {
@@ -279,10 +278,10 @@ func (g *Game) moveStack(bottom *camel, top *camel, destPos BoardPosition, pushB
 			sourceSp.StackTop = nil
 		} else {
 			top.Next.Prev = nil
+			top.Next = nil
 		}
 	}
 	destSp := &g.boardSpaces[destPos]
-	//	fmt.Printf("after detach: destSp: %s \n", destSp)
 	prevBottom := destSp.StackBottom
 	bottom.Prev = nil
 	if pushBelowStack {
@@ -305,7 +304,6 @@ func (g *Game) moveStack(bottom *camel, top *camel, destPos BoardPosition, pushB
 	for ; bottom != top.Next; bottom = bottom.Next {
 		bottom.Position = destPos
 	}
-	//	fmt.Printf("after move: %s \n", g.camelTokens)
 }
 
 // Applies move within the current leg of the race. This may
