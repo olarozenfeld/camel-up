@@ -542,13 +542,291 @@ func TestApplyCamelMove(t *testing.T) {
 	}
 }
 
+// The test cases and their correct distributions are curtesy of https://github.com/nishchalchandna/camel_up/blob/main/lib/search_test.go
+// Also verified by SimulateLegRankingDistribution.
 func TestComputeLegRankingDistribution(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	testCases := []struct {
+		desc             string
 		startState       *GameStateInput
 		wantDistribution *RankingDistribution
 	}{
 		{
+			desc: "base case: all camels, no dice to roll",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					0: {Blue, Black, White},
+					1: {Green},
+					2: {Red},
+					3: {Yellow},
+					4: {Purple},
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Purple}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 1,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 1, 0, 0, 0}, // Green
+					{0, 0, 0, 1, 0}, // Yellow
+					{0, 0, 1, 0, 0}, // Red
+					{1, 0, 0, 0, 0}, // Blue
+					{0, 0, 0, 0, 1}, // Purple
+				},
+			},
+		},
+		{
+			desc: "one die left: blue, green",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					1:  {Red, Yellow, Purple},
+					8:  {Green},
+					12: {Blue},
+					13: {Black, White},
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Green, Blue}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 12,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 0, 0, 12, 0}, // Green
+					{0, 12, 0, 0, 0}, // Yellow
+					{12, 0, 0, 0, 0}, // Red
+					{0, 0, 0, 0, 12}, // Blue
+					{0, 0, 12, 0, 0}, // Purple
+				},
+			},
+		},
+		{
+			desc: "one die left: blue, green stacked",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					1:  {Red, Yellow, Purple},
+					8:  {Green, Blue},
+					13: {Black, White},
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Green, Blue}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 12,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 0, 0, 12, 0}, // Green
+					{0, 12, 0, 0, 0}, // Yellow
+					{12, 0, 0, 0, 0}, // Red
+					{0, 0, 0, 0, 12}, // Blue
+					{0, 0, 12, 0, 0}, // Purple
+				},
+			},
+		},
+		{
+			desc: "one die left: blue, green split",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					1:  {Red, Yellow, Purple},
+					8:  {Green},
+					9:  {Blue},
+					13: {Black, White},
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Green, Blue}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 12,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 0, 0, 6, 6},  // Green
+					{0, 12, 0, 0, 0}, // Yellow
+					{12, 0, 0, 0, 0}, // Red
+					{0, 0, 0, 6, 6},  // Blue
+					{0, 0, 12, 0, 0}, // Purple
+				},
+			},
+		},
+		{
+			desc: "one die left: blue, green, red",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					1:  {Yellow, Purple},
+					8:  {Green},
+					9:  {Blue},
+					10: {Red},
+					13: {Black, White},
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Green, Blue}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 12,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 0, 6, 2, 4},  // Green
+					{12, 0, 0, 0, 0}, // Yellow
+					{0, 0, 0, 10, 2}, // Red
+					{0, 0, 6, 0, 6},  // Blue
+					{0, 12, 0, 0, 0}, // Purple
+				},
+			},
+		},
+		{
+			desc: "one die left: blue, green, red stacked",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					1:  {Yellow, Purple},
+					8:  {Green},
+					9:  {Blue, Red},
+					13: {Black, White},
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Green, Blue}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 12,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 0, 6, 0, 6},  // Green
+					{12, 0, 0, 0, 0}, // Yellow
+					{0, 0, 0, 6, 6},  // Red
+					{0, 0, 6, 6, 0},  // Blue
+					{0, 12, 0, 0, 0}, // Purple
+				},
+			},
+		},
+		{
+			desc: "all unstacked, 2nd and 4th dice remain",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					0:  {Yellow},
+					1:  {Purple},
+					2:  {Green},
+					3:  {Blue},
+					4:  {Red},
+					13: {Black, White},
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Purple, Blue}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 12,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 6, 6, 0, 0},  // Green
+					{12, 0, 0, 0, 0}, // Yellow
+					{0, 0, 0, 8, 4},  // Red
+					{0, 0, 4, 2, 6},  // Blue
+					{0, 6, 2, 2, 2},  // Purple
+				},
+			},
+		},
+		{
+			desc: "all stacked, top three dice remain",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					1:  {Yellow, Green, Red, Blue, Purple},
+					13: {Black, White},
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Purple, Red, Blue}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 216,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 216, 0, 0, 0},   // Green
+					{216, 0, 0, 0, 0},   // Yellow
+					{0, 0, 168, 24, 24}, // Red
+					{0, 0, 24, 144, 48}, // Blue
+					{0, 0, 24, 48, 144}, // Purple
+				},
+			},
+		},
+		{
+			desc: "all stacked, top three dice remain with Boo in front",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					1:  {Yellow, Green, Red, Blue, Purple},
+					13: {Black, White},
+				},
+				Boos: map[BoardPosition]string{
+					2: "",
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Purple, Red, Blue}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 216,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 120, 40, 32, 24},  // Green
+					{120, 40, 32, 24, 0},  // Yellow
+					{40, 0, 96, 44, 36},   // Red
+					{32, 32, 12, 92, 48},  // Blue
+					{24, 24, 36, 24, 108}, // Purple
+				},
+			},
+		},
+		{
+			desc: "two dice left - camels far apart",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					1:  {Yellow, Green, Red},
+					5:  {Blue},
+					9:  {Purple},
+					13: {Black, White},
+				},
+				Cheers: map[BoardPosition]string{
+					8: "",
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Blue, Purple, Red}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 216,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 216, 0, 0, 0},  // Green
+					{216, 0, 0, 0, 0},  // Yellow
+					{0, 0, 216, 0, 0},  // Red
+					{0, 0, 0, 180, 36}, // Blue
+					{0, 0, 0, 36, 180}, // Purple
+				},
+			},
+		},
+		{
+			desc: "two dice left - camels far apart - crazy camel - simple",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					1: {Yellow, Green, White, Red},
+					2: {Black},
+					5: {Blue},
+					9: {Purple},
+				},
+				Cheers: map[BoardPosition]string{
+					8: "",
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Blue, Purple, Black}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 216,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 72, 144, 0, 0}, // Green
+					{72, 144, 0, 0, 0}, // Yellow
+					{144, 0, 72, 0, 0}, // Red
+					{0, 0, 0, 188, 28}, // Blue
+					{0, 0, 0, 28, 188}, // Purple
+				},
+			},
+		},
+		{
+			desc: "two dice left - camels far apart - crazy camel - complicated",
+			startState: &GameStateInput{
+				Camels: map[BoardPosition][]Color{
+					4:  {Yellow, Green, White, Red},
+					8:  {Black, Blue},
+					12: {Purple},
+				},
+				Cheers: map[BoardPosition]string{
+					11: "",
+				},
+				DiePyramid: NewDiePyramidWithDice(r, []Color{Blue, Purple, Black}),
+			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 216,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 126, 90, 0, 0}, // Green
+					{126, 90, 0, 0, 0}, // Yellow
+					{90, 0, 126, 0, 0}, // Red
+					{0, 0, 0, 186, 30}, // Blue
+					{0, 0, 0, 30, 186}, // Purple
+				},
+			},
+		},
+		{
+			desc: "two dice left - camels far apart - crazy camel - complicated, game ends",
 			startState: &GameStateInput{
 				Camels: map[BoardPosition][]Color{
 					1: {Yellow, Green, White, Red},
@@ -560,24 +838,29 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 				},
 				DiePyramid: NewDiePyramidWithDice(r, []Color{Blue, Purple, Black}),
 			},
+			wantDistribution: &RankingDistribution{
+				TotalRankings: 216,
+				Rankings: [NumRacingCamels][NumRacingCamels]int{
+					{0, 126, 90, 0, 0}, // Green
+					{126, 90, 0, 0, 0}, // Yellow
+					{90, 0, 126, 0, 0}, // Red
+					{0, 0, 0, 190, 26}, // Blue
+					{0, 0, 0, 26, 190}, // Purple
+				},
+			},
 		},
-		// {
-		// 	startState: &GameStateInput{
-		// 		Camels: map[BoardPosition][]Color{
-		// 			0: {Blue, Green, Red, Yellow, Purple},
-		// 			5: {White, Black},
-		// 		},
-		// 	},
-		// },
 	}
-	for i, tc := range testCases {
-		t.Run(fmt.Sprintf("case_%d", i), func(t *testing.T) {
+	t.Parallel()
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
 			g, err := NewGameFromState(tc.startState)
 			if err != nil {
 				t.Fatal(err)
 			}
-			got := g.SimulateLegRankingDistribution(100)
-			fmt.Printf("Got: \n%s\n", got)
+			computation := g.ComputeLegRankingDistribution()
+			if *tc.wantDistribution != *computation {
+				t.Errorf("want distribution:\n%s, got:\n%s", tc.wantDistribution, computation)
+			}
 		})
 	}
 }

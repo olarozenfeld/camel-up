@@ -17,11 +17,15 @@ func main() {
 	r := rand.New(rand.NewSource(*randomSeed))
 	g, err := NewGameFromState(&GameStateInput{
 		Camels: map[BoardPosition][]Color{
-			0: {Blue, Green, Red, Yellow, Purple},
-			5: {White, Black},
+			0: {Blue, Black, White},
+			1: {Green},
+			2: {Red},
+			3: {Yellow},
+			4: {Purple},
 		},
-		DiePyramid: NewDiePyramid(r),
+		DiePyramid: NewDiePyramidWithDice(r, []Color{Purple}),
 	})
+	fmt.Printf("Game state:\n%s\n", g)
 	if err != nil {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)

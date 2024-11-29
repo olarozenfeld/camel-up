@@ -16,11 +16,15 @@ type RankingDistribution struct {
 	Rankings [NumRacingCamels][NumRacingCamels]int
 }
 
-func (d *RankingDistribution) RecordRanking(ranking *[NumRacingCamels]Color) {
-	d.TotalRankings++
+func (d *RankingDistribution) RecordWeightedRanking(ranking *[NumRacingCamels]Color, weight int) {
+	d.TotalRankings += weight
 	for r, c := range ranking {
-		d.Rankings[r][c]++
+		d.Rankings[c][r] += weight
 	}
+}
+
+func (d *RankingDistribution) RecordRanking(ranking *[NumRacingCamels]Color) {
+	d.RecordWeightedRanking(ranking, 1)
 }
 
 func (d *RankingDistribution) String() string {

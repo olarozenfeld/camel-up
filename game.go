@@ -349,11 +349,80 @@ func (g *Game) undoLastCamelMove() {
 	g.computeRanking()
 }
 
+// Computes all the possible outcomes for the current leg.
 func (g *Game) ComputeLegRankingDistribution() *RankingDistribution {
-	return nil
+	// The remaining weight with N dice in the bag is 6^(N-1) * N!
+	remainingWeights := [6]int{1, 2 * 6, 6 * 36, 24 * 216, 120 * 1296}
+	powersOf2 := [6]int{1, 2, 4, 8, 16, 32}
+	d := &RankingDistribution{}
+	if g.diePyramid.IsEmpty() {
+		// All dice were rolled: only the current board remains.
+		d.RecordRanking(&g.ranking)
+		return d
+	}
+	colors := g.diePyramid.RemainingDice()
+	movesInLeg := g.diePyramid.RemainingRolls()
+	var used [6]bool
+	colorIndices := [NumMovesPerLeg]int{-1, -1, -1, -1, -1}
+	var values [NumMovesPerLeg]RollValue
+	var roll DieRoll
+	for curDie := 0; curDie >= 0; {
+		if colorIndices[curDie] >= 0 {
+			g.undoLastCamelMove()
+
+			c := colors[colorIndices[curDie]]
+			values[curDie]++
+			if c == Black && values[curDie] > 6 || c != Black && values[curDie] > 3 {
+				// Try to find next unused color:
+				used[c] = false
+				for i := colorIndices[curDie] + 1; i <= movesInLeg; i++ {
+					next := colors[i]
+					if !used[next] {
+						used[next] = true
+						colorIndices[curDie] = i
+						values[curDie] = 1
+						break
+					}
+				}
+				if values[curDie] > 1 { // not found
+					colorIndices[curDie] = -1
+					curDie--
+					continue
+				}
+			}
+		} else {
+			// Choose first unused color.
+			for i, c := range colors {
+				if !used[c] {
+					used[c] = true
+					colorIndices[curDie] = i
+					break
+				}
+			}
+			values[curDie] = 1
+		}
+		roll.Color = colors[colorIndices[curDie]]
+		roll.Value = values[curDie]
+		if roll.Value > 3 {
+			roll.Value -= 3
+			roll.Color = White
+		}
+		g.applyCamelMove(&roll)
+		if g.gameOver || curDie == movesInLeg-1 {
+			weightIndex := curDie
+			if !used[Black] {
+				weightIndex++
+			}
+			d.RecordWeightedRanking(&g.ranking, powersOf2[weightIndex]*remainingWeights[movesInLeg-curDie-1])
+		} else {
+			curDie++
+		}
+	}
+	return d
 }
 
-// Simulates the current leg numSamples times.
+// Simulates the current leg numSamples times. It is implemented in order to
+// test/validate the results of ComputeLegRankingDistribution.
 func (g *Game) SimulateLegRankingDistribution(numSamples int) *RankingDistribution {
 	d := &RankingDistribution{}
 	gameCopy := *g

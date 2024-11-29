@@ -52,6 +52,10 @@ func (p *DiePyramid) RemainingRolls() int {
 	return len(p.dice) - 1 - p.numRolls
 }
 
+func (p *DiePyramid) RemainingDice() []Color {
+	return p.dice[p.numRolls:]
+}
+
 func (p *DiePyramid) IsEmpty() bool {
 	return p.RemainingRolls() == 0
 }
