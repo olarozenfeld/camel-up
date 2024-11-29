@@ -566,11 +566,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 1,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 1, 0, 0, 0}, // Green
-					{0, 0, 0, 1, 0}, // Yellow
-					{0, 0, 1, 0, 0}, // Red
-					{1, 0, 0, 0, 0}, // Blue
-					{0, 0, 0, 0, 1}, // Purple
+					Green:  {0, 1, 0, 0, 0},
+					Yellow: {0, 0, 0, 1, 0},
+					Red:    {0, 0, 1, 0, 0},
+					Blue:   {1, 0, 0, 0, 0},
+					Purple: {0, 0, 0, 0, 1},
 				},
 			},
 		},
@@ -588,11 +588,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 12,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 0, 0, 12, 0}, // Green
-					{0, 12, 0, 0, 0}, // Yellow
-					{12, 0, 0, 0, 0}, // Red
-					{0, 0, 0, 0, 12}, // Blue
-					{0, 0, 12, 0, 0}, // Purple
+					Green:  {0, 0, 0, 12, 0},
+					Yellow: {0, 12, 0, 0, 0},
+					Red:    {12, 0, 0, 0, 0},
+					Blue:   {0, 0, 0, 0, 12},
+					Purple: {0, 0, 12, 0, 0},
 				},
 			},
 		},
@@ -609,11 +609,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 12,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 0, 0, 12, 0}, // Green
-					{0, 12, 0, 0, 0}, // Yellow
-					{12, 0, 0, 0, 0}, // Red
-					{0, 0, 0, 0, 12}, // Blue
-					{0, 0, 12, 0, 0}, // Purple
+					Green:  {0, 0, 0, 12, 0},
+					Yellow: {0, 12, 0, 0, 0},
+					Red:    {12, 0, 0, 0, 0},
+					Blue:   {0, 0, 0, 0, 12},
+					Purple: {0, 0, 12, 0, 0},
 				},
 			},
 		},
@@ -631,11 +631,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 12,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 0, 0, 6, 6},  // Green
-					{0, 12, 0, 0, 0}, // Yellow
-					{12, 0, 0, 0, 0}, // Red
-					{0, 0, 0, 6, 6},  // Blue
-					{0, 0, 12, 0, 0}, // Purple
+					Green:  {0, 0, 0, 6, 6},
+					Yellow: {0, 12, 0, 0, 0},
+					Red:    {12, 0, 0, 0, 0},
+					Blue:   {0, 0, 0, 6, 6},
+					Purple: {0, 0, 12, 0, 0},
 				},
 			},
 		},
@@ -654,11 +654,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 12,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 0, 6, 2, 4},  // Green
-					{12, 0, 0, 0, 0}, // Yellow
-					{0, 0, 0, 10, 2}, // Red
-					{0, 0, 6, 0, 6},  // Blue
-					{0, 12, 0, 0, 0}, // Purple
+					Green:  {0, 0, 6, 2, 4},
+					Yellow: {12, 0, 0, 0, 0},
+					Red:    {0, 0, 0, 10, 2},
+					Blue:   {0, 0, 6, 0, 6},
+					Purple: {0, 12, 0, 0, 0},
 				},
 			},
 		},
@@ -676,11 +676,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 12,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 0, 6, 0, 6},  // Green
-					{12, 0, 0, 0, 0}, // Yellow
-					{0, 0, 0, 6, 6},  // Red
-					{0, 0, 6, 6, 0},  // Blue
-					{0, 12, 0, 0, 0}, // Purple
+					Green:  {0, 0, 6, 0, 6},
+					Yellow: {12, 0, 0, 0, 0},
+					Red:    {0, 0, 0, 6, 6},
+					Blue:   {0, 0, 6, 6, 0},
+					Purple: {0, 12, 0, 0, 0},
 				},
 			},
 		},
@@ -700,11 +700,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 12,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 6, 6, 0, 0},  // Green
-					{12, 0, 0, 0, 0}, // Yellow
-					{0, 0, 0, 8, 4},  // Red
-					{0, 0, 4, 2, 6},  // Blue
-					{0, 6, 2, 2, 2},  // Purple
+					Green:  {0, 6, 6, 0, 0},
+					Yellow: {12, 0, 0, 0, 0},
+					Red:    {0, 0, 0, 8, 4},
+					Blue:   {0, 0, 4, 2, 6},
+					Purple: {0, 6, 2, 2, 2},
 				},
 			},
 		},
@@ -720,11 +720,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 216,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 216, 0, 0, 0},   // Green
-					{216, 0, 0, 0, 0},   // Yellow
-					{0, 0, 168, 24, 24}, // Red
-					{0, 0, 24, 144, 48}, // Blue
-					{0, 0, 24, 48, 144}, // Purple
+					Green:  {0, 216, 0, 0, 0},
+					Yellow: {216, 0, 0, 0, 0},
+					Red:    {0, 0, 168, 24, 24},
+					Blue:   {0, 0, 24, 144, 48},
+					Purple: {0, 0, 24, 48, 144},
 				},
 			},
 		},
@@ -743,11 +743,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 216,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 120, 40, 32, 24},  // Green
-					{120, 40, 32, 24, 0},  // Yellow
-					{40, 0, 96, 44, 36},   // Red
-					{32, 32, 12, 92, 48},  // Blue
-					{24, 24, 36, 24, 108}, // Purple
+					Green:  {0, 120, 40, 32, 24},
+					Yellow: {120, 40, 32, 24, 0},
+					Red:    {40, 0, 96, 44, 36},
+					Blue:   {32, 32, 12, 92, 48},
+					Purple: {24, 24, 36, 24, 108},
 				},
 			},
 		},
@@ -768,11 +768,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 216,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 216, 0, 0, 0},  // Green
-					{216, 0, 0, 0, 0},  // Yellow
-					{0, 0, 216, 0, 0},  // Red
-					{0, 0, 0, 180, 36}, // Blue
-					{0, 0, 0, 36, 180}, // Purple
+					Green:  {0, 216, 0, 0, 0},
+					Yellow: {216, 0, 0, 0, 0},
+					Red:    {0, 0, 216, 0, 0},
+					Blue:   {0, 0, 0, 180, 36},
+					Purple: {0, 0, 0, 36, 180},
 				},
 			},
 		},
@@ -793,11 +793,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 216,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 72, 144, 0, 0}, // Green
-					{72, 144, 0, 0, 0}, // Yellow
-					{144, 0, 72, 0, 0}, // Red
-					{0, 0, 0, 188, 28}, // Blue
-					{0, 0, 0, 28, 188}, // Purple
+					Green:  {0, 72, 144, 0, 0},
+					Yellow: {72, 144, 0, 0, 0},
+					Red:    {144, 0, 72, 0, 0},
+					Blue:   {0, 0, 0, 188, 28},
+					Purple: {0, 0, 0, 28, 188},
 				},
 			},
 		},
@@ -817,11 +817,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 216,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 126, 90, 0, 0}, // Green
-					{126, 90, 0, 0, 0}, // Yellow
-					{90, 0, 126, 0, 0}, // Red
-					{0, 0, 0, 186, 30}, // Blue
-					{0, 0, 0, 30, 186}, // Purple
+					Green:  {0, 126, 90, 0, 0},
+					Yellow: {126, 90, 0, 0, 0},
+					Red:    {90, 0, 126, 0, 0},
+					Blue:   {0, 0, 0, 186, 30},
+					Purple: {0, 0, 0, 30, 186},
 				},
 			},
 		},
@@ -841,11 +841,11 @@ func TestComputeLegRankingDistribution(t *testing.T) {
 			wantDistribution: &RankingDistribution{
 				TotalRankings: 216,
 				Rankings: [NumRacingCamels][NumRacingCamels]int{
-					{0, 126, 90, 0, 0}, // Green
-					{126, 90, 0, 0, 0}, // Yellow
-					{90, 0, 126, 0, 0}, // Red
-					{0, 0, 0, 190, 26}, // Blue
-					{0, 0, 0, 26, 190}, // Purple
+					Green:  {0, 126, 90, 0, 0},
+					Yellow: {126, 90, 0, 0, 0},
+					Red:    {90, 0, 126, 0, 0},
+					Blue:   {0, 0, 0, 190, 26},
+					Purple: {0, 0, 0, 26, 190},
 				},
 			},
 		},
