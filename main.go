@@ -3,37 +3,49 @@ package main
 import (
 	"flag"
 	"fmt"
-	"math/rand"
+	"gonum.org/v1/gonum/stat"
 	"os"
+	"runtime/pprof"
 	"time"
 )
 
 var randomSeed = flag.Int64("seed", time.Now().UnixNano(), "Random seed for the randomness source.")
 var samples = flag.Int("samples", 1000, "Number of samples in the simulation.")
+var prof = flag.String("prof", "", "filepath to write CPU profile to.")
 
 func main() {
 	flag.Parse()
+	if *prof != "" {
+		f, err := os.Create(*prof)
+		if err != nil {
+			fmt.Printf("failed to create file: %s", err)
+			os.Exit(1)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
 	fmt.Printf("Seed: %d\n", *randomSeed)
-	r := rand.New(rand.NewSource(*randomSeed))
 	g, err := NewGameFromState(&GameStateInput{
 		Camels: map[BoardPosition][]Color{
-			0: {Blue, Black, White},
-			1: {Green},
-			2: {Red},
-			3: {Yellow},
-			4: {Purple},
+			0: {Blue, Green, Red, Yellow, Purple},
+			5: {White, Black},
 		},
-		DiePyramid: NewDiePyramidWithDice(r, []Color{Purple}),
 	})
 	fmt.Printf("Game state:\n%s\n", g)
 	if err != nil {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
-	start := time.Now()
-	dist := g.SimulateLegRankingDistribution(*samples)
-	end := time.Now()
-
-	fmt.Printf("time: %s\n", end.Sub(start))
-	fmt.Printf("Distribution: \n%s\n", dist)
+	times := make([]float64, *samples, *samples)
+	for i := range *samples {
+		start := time.Now()
+		g.ComputeLegRankingDistribution()
+		end := time.Now()
+		times[i] = float64(end.Sub(start).Nanoseconds())
+	}
+	mean, variance := stat.MeanVariance(times, nil)
+	fmt.Println("Search time stats:")
+	fmt.Printf("Mean: %5.2f ms\n", mean/1000000)
+	fmt.Printf("Variance: %f ms squared \n", variance/float64(1000000*1000000))
 }

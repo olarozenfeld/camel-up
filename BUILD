@@ -21,5 +21,8 @@ go_library(
     name = "camelup_lib",
     srcs = glob(["*.go"], exclude = ["*_test.go"]),
     importpath = "github.com/olarozenfeld/camelup",
-    deps = ["@com_github_fatih_color//:color"],
+    deps = [
+      "@com_github_fatih_color//:color",
+      "@org_gonum_v1_gonum//stat:stat",
+    ],
 )
